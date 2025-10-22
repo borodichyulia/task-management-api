@@ -2,9 +2,13 @@
 
 namespace App\Services;
 
+use App\Exceptions\EmailAlreadyVerifiedException;
+use App\Exceptions\InvalidVerificationLinkException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,12 +24,14 @@ class AuthService
                 'email' => $data->email,
                 'password' => Hash::make($data->password),
             ]);
+            event(new Registered($user));
 
             $token = $user->createToken('auth-token')->plainTextToken;
 
             return [
                 'user' => $user,
                 'token' => $token,
+                'message' => 'Registration successful. Please check your email to verify your account.',
             ];
         });
     }
@@ -50,7 +56,25 @@ class AuthService
         ];
     }
 
-    public function logout(Request $request): void{
+    public function logout(Request $request): void
+    {
         $request->user()->currentAccessToken()->delete();
+    }
+
+    public function verifyEmail($id, $hash): void
+    {
+        $user = User::find($id);
+
+        if (!$user || !hash_equals($hash, sha1($user->getEmailForVerification()))) {
+            throw new InvalidVerificationLinkException('Invalid verification link');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            throw new EmailAlreadyVerifiedException('Email already verified');
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
     }
 }

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\EmailAlreadyVerifiedException;
+use App\Exceptions\InvalidVerificationLinkException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -39,5 +40,15 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully',
         ]);
+    }
+
+    public function verifyEmail($id, $hash)
+    {
+        try {
+            $this->authService->verifyEmail($id, $hash);
+            return response()->json(['message' => 'Email successfully verified'], 200);
+        } catch (EmailAlreadyVerifiedException|InvalidVerificationLinkException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode());
+        }
     }
 }
