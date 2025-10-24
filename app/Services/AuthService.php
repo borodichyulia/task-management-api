@@ -13,6 +13,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthService
 {
@@ -28,6 +29,8 @@ class AuthService
 
             $token = $user->createToken('auth-token')->plainTextToken;
 
+            Log::info("User with email $data->email registered successfully.");
+
             return [
                 'user' => $user,
                 'token' => $token,
@@ -38,9 +41,11 @@ class AuthService
 
     public function login(LoginRequest $credentials): array
     {
+        Log::info("Logining user with email {$credentials->email}.");
         $user = User::where('email', $credentials->email)->first();
 
         if (!$user || !Hash::check($credentials->password, $user->password)) {
+            Log::info("No user found by email $credentials->email.");
             throw new HttpResponseException(
                 response()->json([
                     'message' => 'Invalid credentials',
@@ -59,6 +64,7 @@ class AuthService
     public function logout(Request $request): void
     {
         $request->user()->currentAccessToken()->delete();
+        Log::info("User with email {$request->user()->email} was successfully logged out.");
     }
 
     public function verifyEmail($id, $hash): void
@@ -66,14 +72,17 @@ class AuthService
         $user = User::find($id);
 
         if (!$user || !hash_equals($hash, sha1($user->getEmailForVerification()))) {
+            Log::info("User with email {$user->email} is not verified.");
             throw new InvalidVerificationLinkException('Invalid verification link');
         }
 
         if ($user->hasVerifiedEmail()) {
+            Log::info("User with email {$user->email} is already verified.");
             throw new EmailAlreadyVerifiedException('Email already verified');
         }
 
         if ($user->markEmailAsVerified()) {
+            Log::info("User with email {$user->email} is now verified.");
             event(new Verified($user));
         }
     }
