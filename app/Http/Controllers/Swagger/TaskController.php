@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
  *     path="/api/tasks",
  *     summary="Adds a new task",
  *     tags={"Task"},
+ *     security={{ "bearerAuth": {} }},
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
@@ -40,6 +41,7 @@ use Illuminate\Http\Request;
  *    path="/api/tasks",
  *    summary="Get all tasks",
  *    tags={"Task"},
+ *    security={{ "bearerAuth": {} }},
  *
  *    @OA\Response(
  *        response=200,
@@ -62,6 +64,7 @@ use Illuminate\Http\Request;
  *     path="/api/tasks/{task}",
  *     summary="Get task by id",
  *     tags={"Task"},
+ *     security={{ "bearerAuth": {} }},
  *
  *     @OA\Parameter(
  *         description="Task id",
@@ -90,6 +93,7 @@ use Illuminate\Http\Request;
  *      path="/api/tasks/{task}",
  *      summary="Update task by id",
  *      tags={"Task"},
+ *      security={{ "bearerAuth": {} }},
  *
  *      @OA\Parameter(
  *          description="Task id",
@@ -130,6 +134,8 @@ use Illuminate\Http\Request;
  *     path="/api/tasks/{task}",
  *     summary="Delete task by id",
  *     tags={"Task"},
+ *     security={{ "bearerAuth": {} }},
+ *
  *     @OA\Parameter(
  *         description="Task id",
  *         in="path",
