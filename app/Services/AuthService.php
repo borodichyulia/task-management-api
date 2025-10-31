@@ -45,7 +45,7 @@ class AuthService
         $user = User::where('email', $credentials->email)->first();
 
         if (!$user || !Hash::check($credentials->password, $user->password)) {
-            Log::info("No user found by email $credentials->email.");
+            Log::error("No user found by email $credentials->email.");
             throw new HttpResponseException(
                 response()->json([
                     'message' => 'Invalid credentials',
@@ -72,12 +72,12 @@ class AuthService
         $user = User::find($id);
 
         if (!$user || !hash_equals($hash, sha1($user->getEmailForVerification()))) {
-            Log::info("User with email {$user->email} is not verified.");
+            Log::error("User with email {$user->email} is not verified.");
             throw new InvalidVerificationLinkException('Invalid verification link');
         }
 
         if ($user->hasVerifiedEmail()) {
-            Log::info("User with email {$user->email} is already verified.");
+            Log::error("User with email {$user->email} is already verified.");
             throw new EmailAlreadyVerifiedException('Email already verified');
         }
 
