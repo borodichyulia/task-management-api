@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\HttpStatuses;
 use App\Exceptions\EmailAlreadyVerifiedException;
 use App\Exceptions\InvalidVerificationLinkException;
 use App\Http\Requests\LoginRequest;
@@ -49,7 +50,7 @@ class AuthService
             throw new HttpResponseException(
                 response()->json([
                     'message' => 'Invalid credentials',
-                ], 401)
+                ], HttpStatuses::HTTP_UNAUTHORIZED)
             );
         }
 

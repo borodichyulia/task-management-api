@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\HttpStatuses;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskCollection;
 use App\Http\Resources\TaskResource;
@@ -27,7 +28,7 @@ class TaskController extends Controller
     public function store(TaskRequest $request)
     {
         $task = $this->taskService->createTask($request);
-        return response()->json(new TaskResource($task), 201);
+        return response()->json(new TaskResource($task), HttpStatuses::HTTP_CREATED);
     }
 
     public function show(Task $task): TaskResource
@@ -45,6 +46,6 @@ class TaskController extends Controller
     public function destroy(Task $task): JsonResponse
     {
         $this->taskService->deleteTask($task);
-        return response()->json(null, 204);
+        return response()->json(null, HttpStatuses::HTTP_NO_CONTENT);
     }
 }

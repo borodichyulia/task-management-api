@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\HttpStatuses;
 use App\Exceptions\EmailAlreadyVerifiedException;
 use App\Exceptions\InvalidVerificationLinkException;
 use App\Http\Requests\LoginRequest;
@@ -23,7 +24,7 @@ class AuthController extends Controller
     {
         $result = $this->authService->register($request);
 
-        return response()->json($result, 201);
+        return response()->json($result, HttpStatuses::HTTP_CREATED);
     }
 
     public function login(LoginRequest $request): JsonResponse
