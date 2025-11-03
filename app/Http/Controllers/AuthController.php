@@ -47,6 +47,7 @@ class AuthController extends Controller
     {
         try {
             $this->authService->verifyEmail($id, $hash);
+
             return response()->json(['message' => 'Email successfully verified'], 200);
         } catch (EmailAlreadyVerifiedException|InvalidVerificationLinkException $e) {
             return response()->json(['message' => $e->getMessage()], $e->getCode());

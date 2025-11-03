@@ -22,30 +22,35 @@ class TaskController extends Controller
     public function index(Request $request):TaskCollection
     {
         $tasks = $this->taskService->getUserTasks($request);
+
         return new TaskCollection($tasks);
     }
 
     public function store(TaskRequest $request)
     {
         $task = $this->taskService->createTask($request);
+
         return response()->json(new TaskResource($task), HttpStatuses::HTTP_CREATED);
     }
 
     public function show(Task $task): TaskResource
     {
         $task = $this->taskService->getTask($task);
+
         return new TaskResource($task);
     }
 
     public function update(TaskRequest $request, Task $task): TaskResource
     {
         $task = $this->taskService->updateTask($request, $task);
+
         return new TaskResource($task);
     }
 
     public function destroy(Task $task): JsonResponse
     {
         $this->taskService->deleteTask($task);
+
         return response()->json(null, HttpStatuses::HTTP_NO_CONTENT);
     }
 }
