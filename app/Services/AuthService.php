@@ -42,7 +42,6 @@ class AuthService
 
     public function login(LoginRequest $credentials): array
     {
-        Log::info("Logining user with email {$credentials->email}.");
         $user = User::where('email', $credentials->email)->first();
 
         if (!$user || !Hash::check($credentials->password, $user->password)) {
@@ -65,7 +64,6 @@ class AuthService
     public function logout(Request $request): void
     {
         $request->user()->currentAccessToken()->delete();
-        Log::info("User with email {$request->user()->email} was successfully logged out.");
     }
 
     public function verifyEmail($id, $hash): void
@@ -73,17 +71,14 @@ class AuthService
         $user = User::find($id);
 
         if (!$user || !hash_equals($hash, sha1($user->getEmailForVerification()))) {
-            Log::error("User with email {$user->email} is not verified.");
             throw new InvalidVerificationLinkException('Invalid verification link');
         }
 
         if ($user->hasVerifiedEmail()) {
-            Log::error("User with email {$user->email} is already verified.");
             throw new EmailAlreadyVerifiedException('Email already verified');
         }
 
         if ($user->markEmailAsVerified()) {
-            Log::info("User with email {$user->email} is now verified.");
             event(new Verified($user));
         }
     }
