@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Constants\HttpStatuses;
 use App\Http\Requests\TaskRequest;
-use App\Http\Resources\TaskCollection;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Services\TaskService;
@@ -19,11 +18,11 @@ class TaskController extends Controller
         $this->taskService = $taskService;
     }
 
-    public function index(Request $request):TaskCollection
+    public function index(Request $request)
     {
         $tasks = $this->taskService->getUserTasks($request);
 
-        return new TaskCollection($tasks);
+        return TaskResource::collection($tasks);
     }
 
     public function store(TaskRequest $request)
