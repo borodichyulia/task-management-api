@@ -7,7 +7,9 @@ use App\Exceptions\EmailAlreadyVerifiedException;
 use App\Exceptions\InvalidVerificationLinkException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\AuthResource;
 use App\Services\AuthService;
+use http\Client\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,14 +26,16 @@ class AuthController extends Controller
     {
         $result = $this->authService->register($request);
 
-        return response()->json($result, HttpStatuses::HTTP_CREATED);
+        return (new AuthResource($result))
+            ->response()
+            ->setStatusCode(HttpStatuses::HTTP_CREATED);
     }
 
     public function login(LoginRequest $request): JsonResponse
     {
         $result = $this->authService->login($request);
 
-        return response()->json($result);
+        return (new AuthResource($result))->response();
     }
 
     public function logout(Request $request): JsonResponse
